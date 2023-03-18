@@ -17,14 +17,29 @@ class Program
             }
             else
             {
-                Console.Write("- ");
+                Console.Write(" - ");
             }
             
         }
         Console.WriteLine();
     }
 
-    static bool verifier_reponse(string mot, string reponse)
+    static string[] ChargerLesMots( string fichier)
+    {
+        try
+        {
+            return File.ReadAllLines(fichier);
+        }
+        catch(Exception ex)
+        {
+            Console.WriteLine($"Erreur de lecture du fichier " + fichier + " (" + ex.Message + ")." );
+            Console.WriteLine();
+        }
+
+        return null;
+    }
+
+    static bool Verifier_reponse(string mot, string reponse)
     {   
         if (mot == reponse)
         {
@@ -53,35 +68,37 @@ class Program
     {
         var lettreDevinee = new List<char>();
         var liste_lettre_fausse = new List<char>();
-        int index = 0;
 
         string bonneReponse = string.Empty;
-        int vie = 6;
+        const int VIE = 6;
+        int vie = VIE;
 
         while (vie > 0)
         {   
 
             Console.WriteLine($"Vie restante : {vie}");
 
-            Console.WriteLine(Ascii.PENDU[index]);
+            Console.WriteLine(Ascii.PENDU[VIE - vie]);
 
-            Console.WriteLine();
+            if(liste_lettre_fausse.Count > 0 )
+            {
+                Console.Write("Lettre eronnées : " + String.Join(", ", liste_lettre_fausse)); 
 
-            Console.Write("Lettre eronnées : " + String.Join(", ", liste_lettre_fausse));
+            }
 
-       
             Console.WriteLine();
             Console.WriteLine();
 
             Afficher_Mot(mot, lettreDevinee);
+
             Console.WriteLine();
-            
+            Console.WriteLine();
+
 
             var lettre = Demander_Lettre();
 
             Console.WriteLine();
-
-            
+            Console.WriteLine();
 
             Console.Clear();
             
@@ -99,12 +116,23 @@ class Program
             {
                 Console.WriteLine("Hélas! Cette lettre n'est pas dans le mot..");
                 Console.WriteLine();
-                liste_lettre_fausse.Add(lettre);
+
+                if (!liste_lettre_fausse.Contains(lettre))
+                {
+
+                    liste_lettre_fausse.Add(lettre);
+                    vie--;
+                }
+                else
+                {
+                    Console.WriteLine("Vous avez déjà essayé cette lettre !");
+                }
                 
-                vie--;
-                index++;
+                
             }
-            bool verification = verifier_reponse(mot, bonneReponse);
+
+
+            bool verification = Verifier_reponse(mot, bonneReponse);
 
             if(verification == true)
             {
@@ -119,14 +147,29 @@ class Program
         if (vie == 0)
         {
             Console.Clear();
-            Console.Write($"Oh Zut ! Il vous reste {vie} vies. Vous avez perdu !");
+            Console.WriteLine(Ascii.PENDU[VIE - vie]);
+            Console.WriteLine();
+            Console.WriteLine();
+            Console.Write($"Oh Zut ! Il vous reste {vie} vies. Vous avez été pendu !");
+            Console.WriteLine();
+            Console.WriteLine();
         }
 
     }
 
     static void Main(string[] args)
     {
-        string mot = "KOUMEIL";
-        Deviner_Mot(mot);
+        var mots = ChargerLesMots("mots.txt");
+
+        if(mots == null ||mots.Length == 0)
+        {
+            Console.WriteLine("La liste de mots est vide.") ;
+        }
+        else
+        {
+            Deviner_Mot(mots[0].Trim());
+        }
+
+        
     }
 }
