@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.Linq.Expressions;
 
 class Program
@@ -17,7 +18,9 @@ class Program
             {
                 Console.Write("-");
             }
+            
         }
+        Console.WriteLine();
     }
     static char Demander_Lettre()
     {   
@@ -37,13 +40,51 @@ class Program
     }
     static void Deviner_Mot(string mot)
     {
-        
+        var lettreDevinee = new List<char>();
+        string bonneReponse = string.Empty;
+        int vie = 6;
+
+        while (vie > 0)
+        {
+            Afficher_Mot(mot, lettreDevinee);
+            var lettre = Demander_Lettre();
+            
+            Console.Clear();
+            Console.WriteLine($"Vie restante : {vie}");
+
+            if (mot.Contains(lettre))
+            {
+                Console.WriteLine("Cette lettre est dans le mot");
+                
+                lettreDevinee.Add(lettre);
+                bonneReponse += lettre;
+            }
+            else
+            {
+                Console.WriteLine("Cette lettre n'est pas dans le mot");
+                vie--;
+            }
+
+            if (mot == bonneReponse)
+            {
+                Console.Clear();
+                Console.Write($"Vous avez gagné ! Le mot à deviner était {mot} !");
+                break;
+            }
+
+        }
+
+        if (vie == 0)
+        {
+            Console.Clear();
+            Console.Write($"Oh Zut ! Il vous reste {vie} vies. Vous avez perdu !");
+        }
 
     }
 
     static void Main(string[] args)
     {
-        var lettre = Demander_Lettre();
-         Afficher_Mot("KOUMEIL", new List<char> {lettre} );
+        string mot = "KOUMEIL";
+        Deviner_Mot(mot);
     }
 }
